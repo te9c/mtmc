@@ -7,10 +7,15 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/thirdparty/cpp-httplib)
+
 add_executable(
     ${PROJECT_NAME}
     main.cpp
     Downloader.cpp
     Indexer.cpp
     indexers/Torznab.h
+)
+target_link_libraries(${PROJECT_NAME}
+    httplib
 )
