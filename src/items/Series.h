@@ -1,10 +1,12 @@
 #pragma once
 
+#include <string>
 #include <vector>
 
-#include "MediaItem.h"
 #include "Season.h"
 
-struct Series : public MediaItem {
+struct Series {
+    std::string name;
+    uint32_t yearReleased;
     std::vector<Season> seasons;
 };

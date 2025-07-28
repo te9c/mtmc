@@ -1,13 +1,14 @@
 #pragma once
 
-#include <cstdint>
 #include <string>
+#include <filesystem>
+#include <vector>
+
+#include "Subtitle.h"
+#include "Audio.h"
 
 struct MediaItem {
-    std::string name;
-    uint32_t year_released;
-
-    virtual std::string GetFullName() {
-        return name + "(" + std::to_string(year_released) + ")";
-    };
+    std::filesystem::path mediaFile;
+    std::vector<Subtitle> ext_subtitles;
+    std::vector<Audio> ext_audios;
 };

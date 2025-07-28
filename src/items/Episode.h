@@ -1,8 +1,10 @@
 #pragma once
 
-#include <filesystem>
+#include <cstdint>
+
+#include "MediaItem.h"
 
 struct Episode {
     uint32_t number;
-    std::filesystem::path path_to_media;
+    MediaItem media;
 };
