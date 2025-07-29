@@ -1,7 +1,10 @@
 #include <iostream>
+#include <string>
+
+#include "httplib.h"
+#include "indexers/Torznab.h"
 
 int main() {
-    std::cout << "Hello world!\n";
 
     return 0;
 }

@@ -21,9 +21,7 @@ find_package(OpenSSL REQUIRED)
 add_executable(
     ${PROJECT_NAME}
     main.cpp
-    Downloader.cpp
-    Indexer.cpp
-    indexers/Torznab.h
+    indexers/Torznab.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}
