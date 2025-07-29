@@ -18,6 +18,8 @@ set(frameworks ${cfnetwork_lib} ${corefoundation_lib})
 
 find_package(OpenSSL REQUIRED)
 
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/thirdparty/pugixml)
+
 add_executable(
     ${PROJECT_NAME}
     main.cpp
@@ -25,5 +27,5 @@ add_executable(
 )
 
 target_link_libraries(${PROJECT_NAME}
-    PRIVATE httplib OpenSSL::SSL OpenSSL::Crypto ${frameworks}
+    PRIVATE httplib OpenSSL::SSL OpenSSL::Crypto ${frameworks} pugixml
 )

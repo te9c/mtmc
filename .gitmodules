@@ -1,3 +1,6 @@
 [submodule "src/thirdparty/cpp-httplib"]
 	path = src/thirdparty/cpp-httplib
 	url = https://github.com/yhirose/cpp-httplib.git
+[submodule "src/thirdparty/pugixml"]
+	path = src/thirdparty/pugixml
+	url = https://github.com/zeux/pugixml.git
