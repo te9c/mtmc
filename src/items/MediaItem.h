@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include <filesystem>
 #include <vector>
 
@@ -9,6 +8,6 @@
 
 struct MediaItem {
     std::filesystem::path mediaFile;
-    std::vector<Subtitle> ext_subtitles;
-    std::vector<Audio> ext_audios;
+    std::vector<Subtitle> extSubtitles;
+    std::vector<Audio> extAudios;
 };

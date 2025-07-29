@@ -9,6 +9,15 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/thirdparty/cpp-httplib)
 
+if(APPLE)
+    find_library(cfnetwork_lib CFNetwork REQUIRED)
+    find_library(corefoundation_lib corefoundation REQUIRED)
+endif()
+
+set(frameworks ${cfnetwork_lib} ${corefoundation_lib})
+
+find_package(OpenSSL REQUIRED)
+
 add_executable(
     ${PROJECT_NAME}
     main.cpp
@@ -16,6 +25,7 @@ add_executable(
     Indexer.cpp
     indexers/Torznab.h
 )
+
 target_link_libraries(${PROJECT_NAME}
-    httplib
+    PRIVATE httplib OpenSSL::SSL OpenSSL::Crypto ${frameworks}
 )
