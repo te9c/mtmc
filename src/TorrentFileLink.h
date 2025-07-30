@@ -3,6 +3,7 @@
 #include <string>
 
 struct TorrentFileLink {
-    std::string filename;
-    std::string download_url;
+    std::string title;
+    std::string torrentLink;
+    std::string pageUrl;
 };

@@ -1,11 +1,35 @@
 #include <iostream>
 #include <string>
+#include <cstring>
 #include <regex>
 
 #include "httplib.h"
 #include "pugixml.hpp"
 #include "Torznab.h"
 #include "../TorrentFileLink.h"
+
+inline TorznabItem GetItemFromNode(const pugi::xml_node& itemNode) {
+    TorznabItem item;
+    item.title = itemNode.child("title").child_value();
+    item.guid = itemNode.child("guid").child_value();
+    item.comments = itemNode.child("comments").child_value();
+    item.torrentLink = itemNode.child("link").child_value();
+    for (auto attr : itemNode.children("torznab:attr")) {
+        if (std::strcmp(attr.attribute("name").value(), "magneturl") == 0) {
+            item.magnetUrl = attr.attribute("value").value();
+        }
+    }
+
+    return item;
+}
+
+inline TorrentFileLink GetLinkFromItem(TorznabItem item) {
+    TorrentFileLink link;
+    link.title = item.title;
+    link.pageUrl = item.guid;
+    link.torrentLink = item.torrentLink;
+    return link;
+}
 
 Torznab::Torznab(const std::string& baseurl, const std::string& apikey) : apikey_(apikey) {
     std::regex pattern(R"((https?:\/\/)?([a-zA-Z0-9.]+)(?:\:(\d+))?(?:\/(.*))?$)");
@@ -68,7 +92,10 @@ std::vector<TorrentFileLink> Torznab::SearchTorrentFiles(const std::string& quer
                 ". Description: " + std::string(err.attribute("description").value()));
     }
 
-    std::cout << xml << '\n';
+    std::vector<TorrentFileLink> links;
+    for (auto itemNode : doc.child("rss").child("channel").children("item")) {
+        links.push_back(GetLinkFromItem(GetItemFromNode(itemNode)));
+    }
 
-    throw std::runtime_error("not implemented");
-} 
+    return links;
+}

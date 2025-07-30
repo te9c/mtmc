@@ -20,3 +20,11 @@ private:
     std::string apikey_;
     std::unique_ptr<httplib::Client> client_;
 };
+
+struct TorznabItem {
+    std::string title;
+    std::string guid;
+    std::string comments;
+    std::string torrentLink;
+    std::string magnetUrl;
+};
