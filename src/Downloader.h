@@ -16,19 +16,25 @@
 
 #include "TorrentFileLink.h"
 
-struct TorrentDownloadRequest {
+struct DownloadRequest {
     std::filesystem::path torrentFilePath;
     std::filesystem::path savePath;
     bool paused = true;
-    std::vector<std::string> files; // empty for all
 };
 
-struct TorrentDownloadingInfo {
+struct TorrentInfo {
     std::string name;
     std::string hash;
     std::filesystem::path savedPath;
     uint64_t downloadedBytes;
     uint64_t totalSizeBytes;
+};
+
+struct TorrentFile {
+    std::string path;
+    uint64_t size;
+    float progress;
+    bool inProgress;
 };
 
 struct DownloaderError : public std::runtime_error {
@@ -37,9 +43,12 @@ struct DownloaderError : public std::runtime_error {
 
 class Downloader {
 public:
-    virtual void AddTorrent(const TorrentDownloadRequest& request) = 0;
+    virtual void AddTorrent(const DownloadRequest& request) = 0;
     virtual void DeleteTorrent(const std::string& hash) = 0;
-    virtual std::vector<TorrentDownloadingInfo> GetTorrents() = 0;
-    virtual TorrentDownloadingInfo GetTorrent(const std::string& hash) = 0;
-    virtual void PauseTorrent(const std::string& hash);
+    virtual std::vector<TorrentInfo> GetTorrents() = 0;
+    virtual TorrentInfo GetTorrent(const std::string& hash) = 0;
+    virtual std::vector<TorrentFile> GetTorrentFiles(const std::string& hash) = 0;
+    virtual void StartDownloadingFiles(const std::string& hash, const std::vector<std::string>& files) = 0;
+    virtual void StopDownloadingFiles(const std::string& hash, const std::vector<std::string>& files) = 0;
+    virtual void PauseTorrent(const std::string& hash) = 0;
 };
