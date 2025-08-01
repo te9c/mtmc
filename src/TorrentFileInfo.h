@@ -4,7 +4,12 @@
 #include <vector>
 #include <filesystem>
 
-struct TorrentFileInfo {
+struct TorrentInfo {
+    struct InternalFile {
+        std::string path;
+        size_t length;
+    };
+
     std::string announce;
     std::string comment;
     std::vector<std::string> pieceHashes;
@@ -13,8 +18,8 @@ struct TorrentFileInfo {
     std::string name;
     std::string infoHash;
     std::vector<std::string> announceList;
-    std::vector<std::string> filesList;
+    std::vector<InternalFile> files;
 };
 
-TorrentFileInfo ParseTorrentFile(const std::filesystem::path& filename);
+TorrentInfo ParseTorrent(const std::filesystem::path& filename);
 std::string CalculateSHA1(const std::string& data);

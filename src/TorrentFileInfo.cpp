@@ -6,7 +6,7 @@
 #include <fstream>
 #include <openssl/sha.h>
 
-TorrentFileInfo ParseTorrentFile(const std::filesystem::path& filename) {
+TorrentInfo ParseTorrent(const std::filesystem::path& filename) {
     std::string input = "";
 
     {
@@ -20,11 +20,12 @@ TorrentFileInfo ParseTorrentFile(const std::filesystem::path& filename) {
     auto dict = std::get<Bencode::dictionary>(Bencode::decode(input));
     auto infoDict = std::get<Bencode::dictionary>(dict["info"]);
 
-    TorrentFileInfo torrentFile;
+    TorrentInfo torrentFile;
     torrentFile.announce = std::get<Bencode::string>(dict["announce"]);
     torrentFile.comment = std::get<Bencode::string>(dict["comment"]);
     torrentFile.pieceLength = std::get<Bencode::integer>(infoDict["piece length"]);
-    torrentFile.length = std::get<Bencode::integer>(infoDict["length"]);
+    if (std::holds_alternative<Bencode::integer>(infoDict["length"]))
+        torrentFile.length = std::get<Bencode::integer>(infoDict["length"]);
     torrentFile.name = std::get<Bencode::string>(infoDict["name"]);
     auto concatHash = std::get<Bencode::string>(infoDict["pieces"]);
 
@@ -41,15 +42,35 @@ TorrentFileInfo ParseTorrentFile(const std::filesystem::path& filename) {
     torrentFile.announceList.push_back(torrentFile.announce);
 
     if (std::holds_alternative<Bencode::list>(dict["announce-list"])) {
-        for (auto data : std::get<Bencode::list>(dict["announce-list"])) {
+        for (const auto& data : std::get<Bencode::list>(dict["announce-list"])) {
             if (!std::holds_alternative<Bencode::list>(data))
                 continue;
-            for (auto s_data : std::get<Bencode::list>(data)) {
+            for (const auto& s_data : std::get<Bencode::list>(data)) {
                 if (!std::holds_alternative<Bencode::string>(s_data))
                     continue;
                 torrentFile.announceList.push_back(std::get<Bencode::string>(s_data));
             }
         }
+    }
+    if (std::holds_alternative<Bencode::list>(infoDict["files"])) {
+        torrentFile.length = 0;
+        torrentFile.files.reserve(std::get<Bencode::list>(infoDict["files"]).size());
+        for (const auto& d : std::get<Bencode::list>(infoDict["files"])) {
+            auto di = std::get<Bencode::dictionary>(d);
+            torrentFile.files.emplace_back();
+            torrentFile.files.back().length = std::get<Bencode::integer>(di["length"]);
+            torrentFile.length += torrentFile.files.back().length;
+            for (const auto& p : std::get<Bencode::list>(di["path"])) {
+                if (torrentFile.files.back().path.size()) {
+                    torrentFile.files.back().path.push_back('/');
+                }
+                torrentFile.files.back().path += std::get<Bencode::string>(p);
+            }
+        }
+    }
+
+    if (torrentFile.files.empty()) {
+        torrentFile.files.emplace_back(torrentFile.name, torrentFile.length);
     }
 
     return torrentFile;
