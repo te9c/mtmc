@@ -7,6 +7,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+add_compile_options(-gdwarf-4)
+
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/thirdparty/cpp-httplib)
 
 if(APPLE)
@@ -24,6 +26,8 @@ add_executable(
     ${PROJECT_NAME}
     main.cpp
     indexers/Torznab.cpp
+    Bencode.cpp
+    TorrentFileInfo.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}
