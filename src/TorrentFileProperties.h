@@ -4,7 +4,7 @@
 #include <vector>
 #include <filesystem>
 
-struct TorrentInfo {
+struct TorrentFileProperties {
     struct InternalFile {
         std::string path;
         size_t length;
@@ -21,5 +21,5 @@ struct TorrentInfo {
     std::vector<InternalFile> files;
 };
 
-TorrentInfo ParseTorrent(const std::filesystem::path& filename);
+TorrentFileProperties ParseTorrentFile(const std::filesystem::path& filename);
 std::string CalculateSHA1(const std::string& data);

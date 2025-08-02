@@ -27,7 +27,7 @@ add_executable(
     main.cpp
     indexers/Torznab.cpp
     Bencode.cpp
-    TorrentFileInfo.cpp
+    TorrentFileProperties.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}

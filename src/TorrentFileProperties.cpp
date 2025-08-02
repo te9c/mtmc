@@ -1,12 +1,12 @@
 #include "Bencode.h"
-#include "TorrentFileInfo.h"
+#include "TorrentFileProperties.h"
 
 #include <iostream>
 #include <sstream>
 #include <fstream>
 #include <openssl/sha.h>
 
-TorrentInfo ParseTorrent(const std::filesystem::path& filename) {
+TorrentFileProperties ParseTorrentFile(const std::filesystem::path& filename) {
     std::string input = "";
 
     {
@@ -20,7 +20,7 @@ TorrentInfo ParseTorrent(const std::filesystem::path& filename) {
     auto dict = std::get<Bencode::dictionary>(Bencode::decode(input));
     auto infoDict = std::get<Bencode::dictionary>(dict["info"]);
 
-    TorrentInfo torrentFile;
+    TorrentFileProperties torrentFile;
     torrentFile.announce = std::get<Bencode::string>(dict["announce"]);
     torrentFile.comment = std::get<Bencode::string>(dict["comment"]);
     torrentFile.pieceLength = std::get<Bencode::integer>(infoDict["piece length"]);
