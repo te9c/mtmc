@@ -1,12 +1,11 @@
-#include <iostream>
 #include <string>
 #include <cstring>
-#include <regex>
 
 #include "httplib.h"
 #include "pugixml.hpp"
 #include "Torznab.h"
 #include "../TorrentFileLink.h"
+#include "../Utils.h"
 
 inline TorznabItem GetItemFromNode(const pugi::xml_node& itemNode) {
     TorznabItem item;
@@ -32,27 +31,10 @@ inline TorrentFileLink GetLinkFromItem(TorznabItem item) {
 }
 
 Torznab::Torznab(const std::string& baseurl, const std::string& apikey) : apikey_(apikey) {
-    std::regex pattern(R"((https?:\/\/)?([a-zA-Z0-9.]+)(?:\:(\d+))?(?:\/(.*))?$)");
-    std::smatch matches;
-    if (!std::regex_match(baseurl, matches, pattern)) {
-        throw std::runtime_error("could not match url: " + baseurl + " with url regex.");
-    }
+    utils::Url u = utils::ParseUrl(baseurl);
 
-    std::string proto = matches[1];
-    std::string host = matches[2];
-    std::string port = matches[3];
-    std::string path = "/" + std::string(matches[4]);
-    while (path.size() && path.back() == '/') {
-        path.pop_back();
-    }
-
-    std::string url = proto + host;
-    if (!port.empty()) {
-        url += ":" + port;
-    }
-
-    basepath_ = path;
-    client_ = std::make_unique<httplib::Client>(url);
+    basepath_ = u.path;
+    client_ = std::make_unique<httplib::Client>(u.GetBase());
 }
 
 std::string Torznab::SearchXml(const std::string& query) {
