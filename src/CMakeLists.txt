@@ -14,9 +14,10 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/thirdparty/cpp-httplib)
 if(APPLE)
     find_library(cfnetwork_lib CFNetwork REQUIRED)
     find_library(corefoundation_lib corefoundation REQUIRED)
+    find_library(security_lib security REQUIRED)
 endif()
 
-set(frameworks ${cfnetwork_lib} ${corefoundation_lib})
+set(frameworks ${cfnetwork_lib} ${corefoundation_lib} ${security_lib})
 
 find_package(OpenSSL REQUIRED)
 
@@ -26,6 +27,7 @@ add_executable(
     ${PROJECT_NAME}
     main.cpp
     indexers/Torznab.cpp
+    downloaders/Qbittorrent.cpp
     Bencode.cpp
     TorrentFileProperties.cpp
 )

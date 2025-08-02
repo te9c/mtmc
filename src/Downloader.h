@@ -30,7 +30,10 @@ struct TorrentInfo {
     uint64_t totalSizeBytes;
 };
 
-struct TorrentFile {
+// This is for files that
+// located inside of a torrent,
+// not the torrent file itself.
+struct InternalTorrentFile {
     std::string path;
     uint64_t size;
     float progress;
@@ -47,7 +50,7 @@ public:
     virtual void DeleteTorrent(const std::string& hash) = 0;
     virtual std::vector<TorrentInfo> GetTorrents() = 0;
     virtual TorrentInfo GetTorrent(const std::string& hash) = 0;
-    virtual std::vector<TorrentFile> GetTorrentFiles(const std::string& hash) = 0;
+    virtual std::vector<InternalTorrentFile> GetTorrentFiles(const std::string& hash) = 0;
     virtual void StartDownloadingFiles(const std::string& hash, const std::vector<std::string>& files) = 0;
     virtual void StopDownloadingFiles(const std::string& hash, const std::vector<std::string>& files) = 0;
     virtual void PauseTorrent(const std::string& hash) = 0;

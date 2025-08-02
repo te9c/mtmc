@@ -19,7 +19,8 @@ struct Url {
     std::string port;
     std::string path;
 
-    std::string GetBase() {
+    // proto + host + port (if exists)
+    std::string GetBase() const {
         std::string u = proto + host;
         if (!port.empty()) {
             u += ":" + port;
@@ -38,6 +39,9 @@ inline Url ParseUrl(const std::string& url) {
     Url res;
 
     res.proto = matches[1];
+    if (res.proto.empty()) {
+        res.proto = "http://";
+    }
     res.host = matches[2];
     res.port = matches[3];
     res.path = "/" + std::string(matches[4]);
