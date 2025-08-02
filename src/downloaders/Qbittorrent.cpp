@@ -11,7 +11,15 @@ Qbittorrent::Qbittorrent(const std::string& baseurl, const std::string& username
     client_ = std::make_unique<httplib::Client>(url_.GetBase());
 }
 
-void Qbittorrent::Authenticate() {
+httplib::Headers Qbittorrent::get_default_headers() {
+    httplib::Headers headers;
+    if (!cookie_.empty()) {
+        headers.insert({"Cookie", "SID=" + cookie_});
+    }
+    return headers;
+}
+
+void Qbittorrent::authenticate() {
     httplib::Headers headers = {
         { "Referer", url_.GetBase() },
     };
@@ -33,6 +41,37 @@ void Qbittorrent::Authenticate() {
         throw ApiError("Can't match cookie string (" + cookie + ") from server to regex.");
     }
     cookie_ = sm[1];
+}
+
+std::string Qbittorrent::GetApplicationVersion() {
+    if (cookie_.empty())
+        authenticate();
+
+    auto h = get_default_headers();
+    auto res = client_->Get(url_.path + "/api/v2/app/version", h);
+    if (!res) {
+        throw std::runtime_error(httplib::to_string(res.error()));
+    }
+    if (res->status != httplib::StatusCode::OK_200) {
+        throw AuthenticationError("Response status (" + std::to_string(res->status) + ") is not 200. Could be banned because of too many attempts.");
+    }
+
+    return res->body;
+}
+std::string Qbittorrent::GetApiVersion() {
+    if (cookie_.empty()) {
+        authenticate();
+    }
+
+    auto h = get_default_headers();
+    auto res = client_->Get(url_.path + "/api/v2/app/webapiVersion", h);
+    if (!res) {
+        throw std::runtime_error(httplib::to_string(res.error()));
+    }
+    if (res->status != httplib::StatusCode::OK_200) {
+        throw AuthenticationError("Response status (" + std::to_string(res->status) + ") is not 200. Could be banned because of too many attempts.");
+    }
+    return res->body;
 }
 
 void Qbittorrent::AddTorrent(const DownloadRequest& request) {

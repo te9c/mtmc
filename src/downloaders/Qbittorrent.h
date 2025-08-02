@@ -11,7 +11,11 @@
 
 class Qbittorrent : public Downloader {
 public:
+
     Qbittorrent(const std::string& baseurl, const std::string& username, const std::string& password);
+
+    std::string GetApplicationVersion();
+    std::string GetApiVersion();
 
     void AddTorrent(const DownloadRequest& request) override;
     void DeleteTorrent(const std::string& hash) override;
@@ -22,8 +26,9 @@ public:
     void StopDownloadingFiles(const std::string& hash, const std::vector<std::string>& files) override;
     void PauseTorrent(const std::string& hash) override;
 
-public:
-    void Authenticate();
+private:
+    void authenticate();
+    httplib::Headers get_default_headers();
 
     utils::Url url_;
     std::string username_;
